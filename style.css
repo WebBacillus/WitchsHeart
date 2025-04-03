@@ -1,0 +1,23 @@
+body {
+    display: flex;
+    flex-direction: column; /* เรียงจากบนลงล่าง */
+    align-items: center; /* จัดกึ่งกลางแนวนอน */
+    justify-content: center; /* จัดกึ่งกลางแนวตั้ง (อาจไม่เห็นผลถ้า content สูง) */
+    height: 100vh; /* เต็มความสูงของ viewport */
+    margin: 0;
+    background-color: #f0f0f0; /* สีพื้นหลังเทาอ่อน */
+    font-family: sans-serif;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+canvas {
+    border: 1px solid black; /* เส้นขอบ canvas */
+    background-color: #d3eadd; /* สีพื้นหลัง canvas อ่อนๆ */
+}
+
+p {
+    margin-top: 15px;
+}
