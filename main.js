@@ -12,7 +12,7 @@ kaplay({
 loadMusic("song", "/src/SunsShadow.mp3");
 const music = play("song");
 music.speed = 1;
-music.volume = 0.2; // Start with some volume
+music.volume = 0.5; // Start with some volume
 music.loop = true;
 music.paused = false; // Ensure music starts playing
 
@@ -23,10 +23,10 @@ const effects = {
     },
 };
 
-loadSprite("Map0002", "/src/sprites/Map0002.png");
-loadSprite("Map0033", "/src/sprites/Map0033.png");
-loadSprite("Map0032", "/src/sprites/Map0032.png");
-loadSprite("Map0035", "/src/sprites/Map0035.png");
+loadSprite("Map0002", "./src/sprites/Map0002.png");
+loadSprite("Map0033", "./src/sprites/Map0033.png");
+loadSprite("Map0032", "./src/sprites/Map0032.png");
+loadSprite("Map0035", "./src/sprites/Map0035.png");
 
 const backgroundMaps = [
     "Map0002", "Map0033", "Map0033", "Map0033", "Map0033", "Map0032", "Map0035",
