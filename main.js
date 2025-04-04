@@ -9,7 +9,7 @@ kaplay({
 });
 
 // --- Asset Loading ---
-loadMusic("song", "/src/SunsShadow.mp3");
+loadMusic("song", "./src/SunsShadow.mp3");
 const music = play("song");
 music.speed = 1;
 music.volume = 0.5; // Start with some volume
@@ -34,7 +34,7 @@ const backgroundMaps = [
 
 let char_num = 48; // Noel
 
-loadSprite("char", "/src/sprites/char.png", {
+loadSprite("char", "./src/sprites/char.png", {
     sliceX: 12,
     sliceY: 8,
     anims: {
@@ -56,12 +56,23 @@ const playerComponents = () => [
     body({ mass: 10, jumpForce: 0 }),
     anchor("center"),
     scale(2),
+    z(10),
     "player",
 ];
 
+
+const avatarComponents = () => [
+    sprite("n_t_bikkuri"),
+    scale(2),
+    anchor("center"),
+    pos(center().sub(0, -50)),
+    z(99)
+];
+
 // Although characters object exists, it's not used for the initial dialog yet
+loadSprite("n_t_bikkuri", "./src/picture/n_t_bikkuri.png")
 const characters = {
-    "bean": { "sprite": "char", "name": "Bean" },
+    "n_t_bikkuri": { "sprite": "char", "name": "n_t_bikkuri" },
     "mark": { "sprite": "char", "name": "Mark" },
 };
 
@@ -235,11 +246,11 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
         rect(dialogBoxWidth, dialogBoxHeight, { radius: 6 }),
         anchor("center"),
         pos(center().x, height() - dialogBoxHeight / 2 - dialogBoxPadding), // Position bottom center
-        outline(3, BLACK), // Black outline
+        outline(1, YELLOW), // Black outline
         fixed(),           // Stick to screen
         z(100),
         opacity(0),        // Start hidden
-        color(WHITE),      // White background
+        color(BLACK),
         "dialogUI"         // Tag for cleanup
     ]);
 
@@ -250,7 +261,7 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
             align: "left",
             lineSpacing: 4,
             styles: { // Keep your styles
-                 "default": { color: BLACK },
+                 "default": { color: WHITE },
                  "kaplay": (idx, ch) => ({ color: Color.fromHex("#6bc96c"), pos: vec2(0, wave(-2, 2, time() * 6 + idx * 0.5)) }),
                  "kaboom": (idx, ch) => ({ color: Color.fromHex("#ff004d"), pos: vec2(0, wave(-3, 3, time() * 4 + idx * 0.5)), scale: wave(1, 1.1, time() * 3 + idx), angle: wave(-5, 5, time() * 3 + idx) }),
                  "surprised": (idx, ch) => ({ color: Color.fromHex("#8465ec"), scale: wave(1, 1.1, time() * 1 + idx), pos: vec2(0, wave(0, 2, time() * 10)) }),
@@ -270,13 +281,18 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
         "dialogUI"
     ]);
 
+    const avatar = add([
+        ...avatarComponents(),
+        opacity(0.0),
+    ])
+
     // --- Dialog Functions (defined within the scene) ---
-    function startWriting(dialog, char) { // char currently unused, but kept for structure
+    function startWriting(char, dialog) { // char currently unused, but kept for structure
         if (isTalking) return; // Prevent starting multiple dialogs at once
 
         console.log("Starting dialog:", dialog); // Debug log
         isTalking = true;
-        textbox.opacity = 1; // Make box visible
+        textbox.opacity = 0.5; // Make box visible
         txt.opacity = 1;     // Make text area visible
         txt.letterCount = 0; // Reset letter count
         txt.text = dialog;   // Set the full text content
@@ -306,23 +322,28 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
         });
     }
 
+
+
     function updateDialog() {
         // Call startWriting with the desired initial message
         // Using "bean" as placeholder character key, though not used yet
-        const [dialog, char] = dialogs[curDialog]
-        startWriting(dialog, "bean");
+        const [char, dialog] = dialogs[curDialog]
+
+        avatar.use(opacity(1.0));
+        startWriting(char, dialog);
         // if (eff) { effects[eff](); } // Keep effects if you need them
     }
     function introDialog(){
         if (intro) {
             dialogs = [
-                ["[default]Press space for continue.[/default]", "bean"],
-                ["[default]Press K for Play/Stop music.[/default]", "bean"]
+                ["n_t_bikkuri", "[default]Press space for continue.[/default]"],
+                ["n_t_bikkuri", "[default]Press K for Play/Stop music.[/default]"]
             ]
             updateDialog()
             // startWriting("[default]Press space for continue.[/default]", "bean");
             // startWriting("[default]Press K for Play/Stop music.[/default]", "bean");
             intro = false
+            
         }
     }
 
@@ -345,6 +366,7 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
             textbox.opacity = 0;
             txt.opacity = 0;
             txt.text = ""; // Clear text
+            avatar.use(opacity(0))
             console.log("Dialog closed.");
         }else {
             updateDialog()
