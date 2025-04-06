@@ -1,3 +1,4 @@
+import { levels } from "./levels.js";
 // Initialize Kaplay
 kaplay({
     width: 320 * 2,
@@ -24,12 +25,13 @@ const effects = {
 };
 
 loadSprite("Map0002", "./src/sprites/Map0002.png");
+loadSprite("Map0003", "./src/sprites/Map0003.png");
 loadSprite("Map0033", "./src/sprites/Map0033.png");
 loadSprite("Map0032", "./src/sprites/Map0032.png");
 loadSprite("Map0035", "./src/sprites/Map0035.png");
 
 const backgroundMaps = [
-    "Map0002", "Map0033", "Map0033", "Map0033", "Map0033", "Map0032", "Map0035",
+    "Map0002", "Map0033", "Map0003", "Map0033", "Map0033", "Map0032", "Map0035",
 ];
 
 let char_num = 48; // Noel
@@ -78,8 +80,9 @@ const characters = {
 
 const spawnPoints = {
     0: { from_1: vec2(4, 13), default: vec2(9.5, 8.5) },
-    1: { from_0: vec2(9, 6), from_5: vec2(2, 7), default: vec2(3, 7) },
-    2: {}, 3: {}, 4: {},
+    1: { from_0: vec2(9, 6), from_2: vec2(14,6), from_5: vec2(2, 7), default: vec2(3, 7) },
+    2: { from_1: vec2(4, 13), default: vec2(9.5,8.5)},
+    3: {}, 4: {},
     5: { from_1: vec2(18, 14), default: vec2(1, 1) } // Added default for level 5
 };
 
@@ -104,62 +107,6 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
     ]);
 
     // Level layout definitions
-    const levels = [
-        [ /* Level 0 data */
-            "                 ",
-            "                 ",
-            "                 ",
-            "wwwwwhwwwwwwwwwwww", // Added h for testing half-wall
-            "whhhh     hhhhh w",
-            "w               w",
-            "w               wwww",
-            "w     w w       w  w",
-            "w     www       w  w",
-            "w     www          w",
-            "w               wwww",
-            "w              ww",
-            "w              ww",
-            "whhw  w        ww",
-            "wwww11wwwwwwwwwww",
-        ],
-        [ /* Level 1 data */
-            "                            ",
-            "                            ",
-            "                            ",
-            "                            ",
-            "                            ",
-            "wwwwwwwww1wwwwwwwwwwwwwwwwww",
-            " 5                         w",
-            " 5                         w",
-            " 5                         w",
-            " 5                         w",
-            " 5                         w",
-            "wwwwwwwwwwwwwwwwwwwwwwwwwwww",
-        ],
-        [], [], [], // Placeholder for levels 2, 3, 4
-        [ /* Level 5 data */
-            "                ",
-            "                ",
-            "                ",
-            "                ",
-            "   wwwwwwwwwwwww",
-            "   ww        hhw",
-            "   w           w",
-            "   w           w",
-            "   wwww     wwww",
-            "   wwww     wwww",
-            "   w  b     d  w",
-            "   w           wwww",
-            "   w     w         5",
-            "   w    www        5",
-            "   w   wwwww       5",
-            "   w    www        5",
-            "   w     w         5",
-            "   w           wwww",
-            "   w           w   ",
-            "   wwwwwwwwwwwww",
-        ],
-    ];
 
     // Tile definitions
     const levelConf = {
@@ -172,6 +119,7 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
             "b": () => [ rect(16, 32), color(64, 64, 128), opacity(0.0), pos(16, 0), area(), body({ isStatic: true }), tile({ isObstacle: true }), "wall" ],
             "d": () => [ rect(16, 32), color(64, 64, 128), opacity(0.0), area(), body({ isStatic: true }), tile({ isObstacle: true }), "wall" ],
             "1": () => [ rect(32, 32), color(255, 0, 0), opacity(0.0), area(), body({ isStatic: true }), tile({ isObstacle: true }), "door1" ],
+            "2": () => [ rect(32, 32), color(255, 0, 0), opacity(0.0), area(), body({ isStatic: true }), tile({ isObstacle: true }), "door2" ],
             "5": () => [ rect(32, 32), color(0, 255, 0), opacity(0.0), area(), body({ isStatic: true }), tile({ isObstacle: true }), "door5" ],
         },
     };
@@ -421,6 +369,12 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
         else if (currentLevelIdxForCallback === 1) go("main", 0, 1);
     });
 
+    player.onCollide("door2", () => {
+        if (isTalking) return; // Don't transition if talking
+        if (currentLevelIdxForCallback === 1) go("main", 2, 1);
+        else if (currentLevelIdxForCallback === 2) go("main", 1, 2);
+    });
+
     player.onCollide("door5", () => {
         if (isTalking) return; // Don't transition if talking
         if (currentLevelIdxForCallback === 1) go("main", 5, 1);
@@ -461,8 +415,3 @@ scene("main", (targetLevelIdx = 0, sourceLevelIdx = null) => { // Default target
 
 // Start the game
 go("main", 0); // Start at level 0, source is null (implies initial start)
-
-onLoad(() => {
-    wait(0.1, updateDialog);
-    // updateDialog();
-});
